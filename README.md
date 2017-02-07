@@ -34,6 +34,15 @@ python pix2pix.py --mode test --output_dir facades_test --input_dir facades/val 
 
 The test run will output an HTML file at `facades_test/index.html` that shows input/output/target image sets.
 
+If you have Docker installed, you can use the provided Docker image to run pix2pix:
+
+```sh
+# train the model
+nvidia-docker run --volume $PWD:/prj --workdir /prj --env PYTHONUNBUFFERED=x affinelayer/pix2pix-tensorflow python pix2pix.py --mode train --output_dir facades_train --max_epochs 200 --input_dir facades/train --which_direction BtoA
+# test the model
+nvidia-docker run --volume $PWD:/prj --workdir /prj --env PYTHONUNBUFFERED=x affinelayer/pix2pix-tensorflow python pix2pix.py --mode test --output_dir facades_test --input_dir facades/val --checkpoint facades_train
+```
+
 ## Datasets and Trained Models
 
 The data format used by this program is the same as the original pix2pix format, which consists of images of input and desired output side by side like:
