@@ -209,7 +209,7 @@ The test run will output an HTML file at `facades_test/index.html` that shows in
 
 ## Code Validation
 
-Validation of the code was performed on a Linux machine with a ~1.3 TFLOPS Nvidia GTX 750 Ti GPU.  Due to a lack of compute power, validation is not extensive and only the `facades` dataset at 200 epochs was tested.
+Validation of the code was performed on a Linux machine with a ~1.3 TFLOPS Nvidia GTX 750 Ti GPU and Azure NC6 instance with a K80 GPU.
 
 ```sh
 git clone https://github.com/affinelayer/pix2pix-tensorflow.git
