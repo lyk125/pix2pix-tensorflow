@@ -6,6 +6,7 @@ import subprocess
 import os
 import sys
 import time
+import argparse
 
 
 parser = argparse.ArgumentParser()
@@ -59,7 +60,7 @@ def main():
         run("python pix2pix.py --mode test --output_dir test/py3_facades_AtoB_test --max_steps 1 --input_dir /data/official/facades/val --seed 0 --checkpoint test/py3_facades_AtoB_train", image="tensorflow/tensorflow:0.12.1-gpu-py3")
 
     print("elapsed", int(time.time() - start))
-    # short: 1817 (mac)
+    # short: 2521 (mac)
     # long:  ??
 
 
