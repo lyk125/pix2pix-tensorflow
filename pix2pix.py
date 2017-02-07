@@ -616,31 +616,27 @@ def main():
     # inputs and targets are [batch_size, height, width, channels]
     model = create_model(examples.inputs, examples.targets)
 
-    inputs = examples.inputs
-    targets = examples.targets
-    outputs = model.outputs
-
     # undo colorization splitting on images that we use for display/output
     if a.lab_colorization:
         if a.which_direction == "AtoB":
             # inputs is brightness, this will be handled fine as a grayscale image
             # need to augment targets and outputs with brightness
-            targets = augment(targets, inputs)
-            outputs = augment(outputs, inputs)
+            targets = augment(examples.targets, examples.inputs)
+            outputs = augment(model.outputs, examples.inputs)
             # inputs can be deprocessed normally and handled as if they are single channel
             # grayscale images
-            inputs = deprocess(inputs)
+            inputs = deprocess(examples.inputs)
         elif a.which_direction == "BtoA":
             # inputs will be color channels only, get brightness from targets
-            inputs = augment(inputs, targets)
-            targets = deprocess(targets)
-            outputs = deprocess(outputs)
+            inputs = augment(examples.inputs, examples.targets)
+            targets = deprocess(examples.targets)
+            outputs = deprocess(model.outputs)
         else:
             raise Exception("invalid direction")
     else:
-        inputs = deprocess(inputs)
-        targets = deprocess(targets)
-        outputs = deprocess(outputs)
+        inputs = deprocess(examples.inputs)
+        targets = deprocess(examples.targets)
+        outputs = deprocess(model.outputs)
 
     def convert(image):
         if a.aspect_ratio != 1.0:
