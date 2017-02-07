@@ -27,20 +27,48 @@ cd pix2pix-tensorflow
 # download the CMP Facades dataset http://cmp.felk.cvut.cz/~tylecr1/facade/
 python tools/download-dataset.py facades
 # train the model (this may take 1-8 hours depending on GPU, on CPU you will be waiting for a bit)
-python pix2pix.py --mode train --output_dir facades_train --max_epochs 200 --input_dir facades/train --which_direction BtoA
+python pix2pix.py \
+  --mode train \
+  --output_dir facades_train \
+  --max_epochs 200 \
+  --input_dir facades/train \
+  --which_direction BtoA
 # test the model
-python pix2pix.py --mode test --output_dir facades_test --input_dir facades/val --checkpoint facades_train
+python pix2pix.py \
+  --mode test \
+  --output_dir facades_test \
+  --input_dir facades/val \
+  --checkpoint facades_train
 ```
 
 The test run will output an HTML file at `facades_test/index.html` that shows input/output/target image sets.
 
-If you have Docker installed, you can use the provided Docker image to run pix2pix:
+If you have Docker installed, you can use the provided Docker image to run pix2pix without installing the correct version of Tensorflow:
 
 ```sh
 # train the model
-nvidia-docker run --volume $PWD:/prj --workdir /prj --env PYTHONUNBUFFERED=x affinelayer/pix2pix-tensorflow python pix2pix.py --mode train --output_dir facades_train --max_epochs 200 --input_dir facades/train --which_direction BtoA
+nvidia-docker run \
+  --volume $PWD:/prj \
+  --workdir /prj \
+  --env PYTHONUNBUFFERED=x \
+  affinelayer/pix2pix-tensorflow \
+    python pix2pix.py \
+      --mode train \
+      --output_dir facades_train \
+      --max_epochs 200 \
+      --input_dir facades/train \
+      --which_direction BtoA
 # test the model
-nvidia-docker run --volume $PWD:/prj --workdir /prj --env PYTHONUNBUFFERED=x affinelayer/pix2pix-tensorflow python pix2pix.py --mode test --output_dir facades_test --input_dir facades/val --checkpoint facades_train
+nvidia-docker run \
+  --volume $PWD:/prj \
+  --workdir /prj \
+  --env PYTHONUNBUFFERED=x \
+  affinelayer/pix2pix-tensorflow \
+    python pix2pix.py \
+      --mode test \
+      --output_dir facades_test \
+      --input_dir facades/val \
+      --checkpoint facades_train
 ```
 
 ## Datasets and Trained Models
@@ -73,13 +101,24 @@ The `facades` dataset is the smallest and easiest to get started with.
 
 ```sh
 # Resize source images
-python tools/process.py --input_dir photos/original --operation resize --output_dir photos/resized
+python tools/process.py \
+  --input_dir photos/original \
+  --operation resize \
+  --output_dir photos/resized
 # Create images with blank centers
-python tools/process.py --input_dir photos/resized --operation blank --output_dir photos/blank
+python tools/process.py \
+  --input_dir photos/resized \
+  --operation blank \
+  --output_dir photos/blank
 # Combine resized images with blanked images
-python tools/process.py --input_dir photos/resized --b_dir photos/blank --operation combine --output_dir photos/combined
+python tools/process.py \
+  --input_dir photos/resized \
+  --b_dir photos/blank \
+  --operation combine \
+  --output_dir photos/combined
 # Split into train/val set
-python tools/split.py --dir photos/combined
+python tools/split.py \
+  --dir photos/combined
 ```
 
 The folder `photos/combined` will now have `train` and `val` subfolders that you can use for training and testing.
@@ -89,7 +128,11 @@ The folder `photos/combined` will now have `train` and `val` subfolders that you
 If you have two directories `a` and `b`, with corresponding images (same name, same dimensions, different data) you can combine them with `process.py`:
 
 ```sh
-python tools/process.py --input_dir a --b_dir b --operation combine --output_dir c
+python tools/process.py \
+  --input_dir a \
+  --b_dir b \
+  --operation combine \
+  --output_dir c
 ```
 
 This puts the images in a side-by-side combined image that `pix2pix.py` expects.
@@ -98,7 +141,10 @@ This puts the images in a side-by-side combined image that `pix2pix.py` expects.
 
 For colorization, your images should ideally all be the same aspect ratio.  You can resize and crop them with the resize command:
 ```sh
-python tools/process.py --input_dir photos/original --operation resize --output_dir photos/resized
+python tools/process.py \
+  --input_dir photos/original \
+  --operation resize \
+  --output_dir photos/resized
 ```
 
 No other processing is required, the colorzation mode (see Training section below) uses single images instead of image pairs.
@@ -109,7 +155,12 @@ No other processing is required, the colorzation mode (see Training section belo
 
 For normal training with image pairs, you need to specify which directory contains the training images, and which direction to train on.  The direction options are `AtoB` or `BtoA`
 ```sh
-python pix2pix.py --mode train --output_dir facades_train --max_epochs 200 --input_dir facades/train --which_direction BtoA
+python pix2pix.py \
+  --mode train \
+  --output_dir facades_train \
+  --max_epochs 200 \
+  --input_dir facades/train \
+  --which_direction BtoA
 ```
 
 ### Colorization
@@ -117,7 +168,12 @@ python pix2pix.py --mode train --output_dir facades_train --max_epochs 200 --inp
 `pix2pix.py` includes special code to handle colorization with single images instead of pairs, using that looks like this:
 
 ```sh
-python pix2pix.py --mode train --output_dir photos_train --max_epochs 200 --input_dir photos/train --lab_colorization
+python pix2pix.py \
+  --mode train \
+  --output_dir photos_train \
+  --max_epochs 200 \
+  --input_dir photos/train \
+  --lab_colorization
 ```
 
 In this mode, image A is the black and white image (lightness only), and image B contains the color channels of that image (no lightness information).
@@ -138,7 +194,11 @@ If you wish to write in-progress pictures as the network is training, use `--dis
 Testing is done with `--mode test`.  You should specify the checkpoint to use with `--checkpoint`, this should point to the `output_dir` that you created previously with `--mode train`:
 
 ```sh
-python pix2pix.py --mode test --output_dir facades_test --input_dir facades/val --checkpoint facades_train
+python pix2pix.py \
+  --mode test \
+  --output_dir facades_test \
+  --input_dir facades/val \
+  --checkpoint facades_train
 ```
 
 The testing mode will load some of the configuration options from the checkpoint provided so you do not need to specify `which_direction` for instance.
@@ -155,8 +215,27 @@ Validation of the code was performed on a Linux machine with a ~1.3 TFLOPS Nvidi
 git clone https://github.com/affinelayer/pix2pix-tensorflow.git
 cd pix2pix-tensorflow
 python tools/download-dataset.py facades
-nvidia-docker run --volume $PWD:/prj --workdir /prj --env PYTHONUNBUFFERED=x affinelayer/pix2pix-tensorflow python pix2pix.py --mode train --output_dir facades_train --max_epochs 200 --input_dir facades/train --which_direction BtoA
-nvidia-docker run --volume $PWD:/prj --workdir /prj --env PYTHONUNBUFFERED=x affinelayer/pix2pix-tensorflow python pix2pix.py --mode test --output_dir facades_test --input_dir facades/val --checkpoint facades_train
+nvidia-docker run \
+  --volume $PWD:/prj \
+  --workdir /prj \
+  --env PYTHONUNBUFFERED=x \
+  affinelayer/pix2pix-tensorflow \
+    python pix2pix.py \
+      --mode train \
+      --output_dir facades_train \
+      --max_epochs 200 \
+      --input_dir facades/train \
+      --which_direction BtoA
+nvidia-docker run \
+  --volume $PWD:/prj \
+  --workdir /prj \
+  --env PYTHONUNBUFFERED=x \
+  affinelayer/pix2pix-tensorflow \
+    python pix2pix.py \
+      --mode test \
+      --output_dir facades_test \
+      --input_dir facades/val \
+      --checkpoint facades_train
 ```
 
 Comparison on facades dataset:
